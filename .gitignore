@@ -1,0 +1,13 @@
+/testCases/TMEHK.db
+/TestData/secrets.py
+/pageObjects/__init__.py
+/testCases/__init__.py
+/TestData/__init__.py
+/utilities/__init__.py
+/.idea/FirstFramework.iml
+/testCases/logfile.log
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/vcs.xml
