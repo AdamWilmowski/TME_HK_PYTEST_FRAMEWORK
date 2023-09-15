@@ -4,6 +4,7 @@ import inspect
 import logging
 import re
 import pytest
+from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 
@@ -45,9 +46,12 @@ class BaseClass:
         return self.driver.current_url
 
     def closeCookies(self):
-        return self.driver.find_element(By.ID, "cookies-consent-close-icon").click()
+        try:
+            self.driver.find_element(By.ID, "cookies-consent-close-icon").click()
+        except NoSuchElementException:
+            pass
 
-    def get_hyperlinks_from_first_email(self, username, password, server, mailbox="INBOX", subject="Welcome to TME"):
+    def get_hyperlinks_from_first_email(self, username, password, server, mailbox="INBOX", subject="Welcome"):
         try:
             mail = imaplib.IMAP4_SSL(server)
             mail.login(username, password)

@@ -20,7 +20,7 @@ class mainPage:
     version = (By.XPATH, "//div[@class='site-footer__text']")
     search = (By.XPATH, "//input[@type='search']")
     add_to_cart = (By.XPATH, "//button[normalize-space()='Add to cart']")
-    cart_button = (By.XPATH, '//*[@id="sylius-cart-button"]/button')
+    cart_button = (By.XPATH, '/html/body/div[1]/nav/div/div/div[3]/div[1]')
     view_cart = (By.LINK_TEXT, "View and edit cart")
     go_to_checkout = (By.LINK_TEXT, "Go to checkout")
     product_name = (By.CSS_SELECTOR, ".product-name.font-weight-bold.m-t-5")

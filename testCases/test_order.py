@@ -1,6 +1,7 @@
 import time
 import pytest
 import datetime
+from selenium.common import NoSuchElementException
 import TestData
 from pageObjects.mainPage import mainPage
 from utilities.BaseClass import BaseClass
@@ -11,64 +12,91 @@ from TestData.TestDataInput import TestDataInput
 
 class TestOrder(BaseClass):
 
-    @pytest.mark.parametrize("product_one, product_two", [("BZX585-C15.115", "3-643813-3")])
-    def test_basic_order(self, product_one, product_two):
+    @pytest.mark.parametrize("product_list", [TestDataInput.two_products])
+    def test_basic_order(self, product_list):
+        log = self.getLogger()
         main_page = mainPage(self.driver)
         sql_function = SQLFunctions()
         version = main_page.getDBVersion()
+        log.info(f"Test started, DB version is {version}")
         self.closeCookies()
         login_page = main_page.getToLoginPage()
         main_page, email = login_page.getToMainPageWithLogging(version)
-        main_page.searchForProduct(product_one)
-        product_one_name = main_page.getProductName().text
-        product_one_min_qty = float(main_page.getProductsAtrubbutes()[1].text.split()[1])
-        product_one_unit_price = float(main_page.getProductPrices()[0].text)
-        product_one_price = round(product_one_unit_price * product_one_min_qty, 2)
-        main_page.getAddToCartButton().click()
-        main_page.waitTillProductinBasket("1")
-        self.back()
-        main_page.clearSearch()
-        main_page.searchForProduct(product_two)
-        product_two_name = main_page.getProductName().text
-        product_two_min_qty = float(main_page.getProductsAtrubbutes()[1].text.split()[1])
-        product_two_unit_price = float(main_page.getProductPrices()[0].text)
-        product_two_price = round(product_two_unit_price * product_two_min_qty, 2)
-        main_page.getAddToCartButton().click()
-        main_page.waitTillProductinBasket("2")
+        time.sleep(15)
+        products_number = 0
+        products_name_list = []
+        products_min_qty_list = []
+        products_unit_price_list = []
+        products_price_list = []
+        for product in product_list:
+            main_page.searchForProduct(product)
+            try:
+                product_name = main_page.getProductName().text
+                products_name_list.append(product_name)
+                product_min_qty = float(main_page.getProductsAtrubbutes()[1].text.split()[1])
+                products_min_qty_list.append(product_min_qty)
+                product_unit_price = float(main_page.getProductPrices()[0].text)
+                products_unit_price_list.append(product_unit_price)
+                product_price = round(product_unit_price * product_min_qty, 2)
+                products_price_list.append(product_price)
+                main_page.getAddToCartButton().click()
+                products_number += 1
+                main_page.waitTillProductinBasket(str(products_number))
+                log.info(f"Product {product} added to cart")
+            except NoSuchElementException:
+                log.error(f"Product {product} not added to cart")
+                pass
+            self.back()
+            main_page.clearSearch()
         checkout_page = main_page.getToCheckout()
         subtotal = float(checkout_page.getCartSubtotal())
         shipping = float(checkout_page.getShippingTotal())
         total = float(checkout_page.getTotal())
-        assert subtotal == product_one_price + product_two_price
-        assert round(subtotal + shipping, 2) == total
-        assert checkout_page.getCartProductsCode()[0].text == product_one_name
-        assert checkout_page.getCartProductsCode()[1].text == product_two_name
+        assert subtotal == sum(products_price_list), log.error("Cart subtotal incorrect")
+        assert round(subtotal + shipping, 2) == total, log.error("Cart total incorrect")
+        cart_product_codes = checkout_page.getCartProductsCode()
+        for i in range(len(cart_product_codes)):
+            assert cart_product_codes[i].text == products_name_list[i], log.error("Cart product name incorrect")
+        log.info("Cart first step correct")
         checkout_page.getToSecondStep()
         subtotal_second_step = float(checkout_page.getCartSubtotal())
-        assert subtotal == subtotal_second_step
+        assert subtotal == subtotal_second_step, log.error("Cart subtotal second step not correct")
+        log.info("Cart second step correct")
         checkout_page.getPlaceOrder()
         checkout_page.waitForPaymentGate()
         payment = float(checkout_page.getPaymentValue())
         sap_id = checkout_page.getSapID()
-        assert payment == total
+        assert payment == total, log.error("Payment total not correct")
+        payment_boxes = checkout_page.getPaymentBoxes()
+        boxes = 0
+        for payment_box in payment_boxes:
+            assert payment_box.is_displayed(), log.critical("Payment gate not displayed")
+            boxes += 1
+        try:
+            assert boxes == 4
+        except AssertionError:
+            log.error("Not all payment options available")
+            pass
         checkout_page.getPaymentBoxes()[1].click()
         checkout_page.getPayByCard().click()
+        log.info("Payment gate correct")
         checkout_page.getToPayment()
         pay_u_value = float(checkout_page.getPayUValue())
-        assert pay_u_value == total
+        assert pay_u_value == total, log.error("PayU not correct")
         self.get_to_main()
         account_page = main_page.getToMyOrders()
         order_econ_number = account_page.getOrdersEcomNrs()[0].text
         order_date = account_page.getOrdersDates()[0].text
         date = datetime.date.today().strftime("%m/%d/%Y")
-        assert date == order_date
+        assert date == order_date, log.error("Order details not correct")
         total_my_orders = float(account_page.getOrdersTotals()[0].text.split()[1])
-        assert total_my_orders == total
+        assert total_my_orders == total, log.error("Order details not correct")
         status = account_page.getOrdersStatuses()[0].text
-        assert status == "Waiting for payment"
+        assert status == "Waiting for payment", log.error("Order details not correct")
         sql_function.inputOrderData(email, sap_id, order_econ_number, total, date, version, registered_user=1)
+        log.info(f"Test completed, order {order_econ_number} details added to SQL database")
 
-    @pytest.mark.parametrize("product_one", ["3-643813-3"])
+    @pytest.mark.parametrize("product_one", [TestDataInput.one_product])
     def test_unregistered_order(self, product_one):
         main_page = mainPage(self.driver)
         sql_function = SQLFunctions()
@@ -81,6 +109,7 @@ class TestOrder(BaseClass):
         product_one_price = round(product_one_unit_price * product_one_min_qty, 2)
         main_page.getAddToCartButton().click()
         main_page.waitTillProductinBasket("1")
+        self.back()
         checkout_page = main_page.getToCheckout()
         random_data = RandomData()
         company_name = random_data.get_CompanyName()
@@ -134,13 +163,14 @@ class TestOrder(BaseClass):
         date = datetime.date.today()
         sql_function.inputOrderData(email, sap_id, 0, total, date, version, registered_user=0)
 
-    @pytest.mark.parametrize("product_one", ["3-643813-3"])
+    @pytest.mark.parametrize("product_one", [TestDataInput.one_product])
     def test_unregistered_order_validations_elements(self, product_one):
         main_page = mainPage(self.driver)
         self.closeCookies()
         main_page.searchForProduct(product_one)
         main_page.getAddToCartButton().click()
         main_page.waitTillProductinBasket("1")
+        self.back()
         checkout_page = main_page.getToCheckout()
         checkout_page.getToNextStep()
         manual_list = ["Company name", "Company e-mail", "Phone number", "Region", "City", "Street Address",

@@ -73,8 +73,7 @@ class CheckoutPage:
         return total
 
     def getToSecondStep(self):
-        actions = ActionChains(self.driver)
-        actions.move_to_element(*CheckoutPage.next_button).click(*CheckoutPage.next_button).perform()
+        self.driver.find_element(*CheckoutPage.next_button).click()
 
     def getPlaceOrder(self):
         self.driver.find_element(*CheckoutPage.place_order_button).click()

@@ -24,7 +24,7 @@ class TestLogin(BaseClass):
         account_page = login_page.getToAccountPage()
         customer_name = sql_function.getCustomerData("customer_name", "email", email)
         log.info(f"Successful login")
-        assert customer_name in account_page.getNameHeader().text, log.error("CUSTOMER NOT CORRECT")
+        assert customer_name in account_page.getNameHeader().text, log.error("CUSTOMER INFO NOT CORRECT")
         log.info("Test passed")
 
     def test_login_incorrect(self):

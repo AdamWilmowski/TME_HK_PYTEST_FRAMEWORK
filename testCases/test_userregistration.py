@@ -1,6 +1,7 @@
 import time
 
 import pytest
+from selenium.common import NoSuchElementException
 
 from pageObjects.registrationPage import RegistrationPage
 from utilities.BaseClass import BaseClass
@@ -42,7 +43,7 @@ class TestUserRegistration(BaseClass):
         registration_page.inputCustomerPhone(customer_phone)
         registration_page.inputCustomerName(customer_name)
         registration_page.inputCustomerSurname(customer_surname)
-        registration_page.getRequiredRadio().click()
+        registration_page.acceptAllAgreements()
         time.sleep(15)
         registration_page.getSubmitButton().click()
         assert company_name in registration_page.getThankHeader().text
@@ -59,6 +60,7 @@ class TestUserRegistration(BaseClass):
         imap_server = Secrets.email_imap_server
         time.sleep(25)
         hyperlinks = self.get_hyperlinks_from_first_email(username, password, imap_server)
+        print(hyperlinks)
         registration_hyperlink = hyperlinks[7]
         self.driver.get(registration_hyperlink)
         login_page = LoginPage(self.driver)

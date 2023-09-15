@@ -23,6 +23,7 @@ class RegistrationPage:
     input_fields = (By.XPATH, "//input[@type='text']")
     required_radio = (By.XPATH, "//label[@for='app_company_user_agreements_245_approved_0']")
     thank_header = (By.XPATH, "//h2")
+    agreements_all_labels = (By.XPATH, "//div/div/div/label")
     thank_values = (By.CSS_SELECTOR, "span[class='item-value']")
 
 
@@ -89,4 +90,9 @@ class RegistrationPage:
 
     def getThankValues(self):
         return self.driver.find_elements(*RegistrationPage.thank_values)
+
+    def acceptAllAgreements(self):
+        agreements_list = self.driver.find_elements(*RegistrationPage.agreements_all_labels)[0::2]
+        for agreement in agreements_list:
+            agreement.click()
 
