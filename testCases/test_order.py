@@ -22,7 +22,6 @@ class TestOrder(BaseClass):
         self.closeCookies()
         login_page = main_page.getToLoginPage()
         main_page, email = login_page.getToMainPageWithLogging(version)
-        time.sleep(15)
         products_number = 0
         products_name_list = []
         products_min_qty_list = []

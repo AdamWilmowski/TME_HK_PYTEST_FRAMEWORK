@@ -70,7 +70,10 @@ class mainPage:
         return self.driver.find_elements(*mainPage.products_attributes)
 
     def waitTillProductinBasket(self, text):
-        WebDriverWait(self.driver, 10).until(EC.text_to_be_present_in_element((By.XPATH, '//*[@id="sylius-cart-button"]/button'), text))
+        WebDriverWait(self.driver, 5).until(EC.text_to_be_present_in_element(((By.XPATH, '//*[@id="sylius-cart-button"]/button')), text))
+
+    def getCartText(self):
+        return self.driver.find_element(By.XPATH, '//*[@id="sylius-cart-button"]/button').text
 
     def clickCartButton(self):
         self.driver.find_element(*mainPage.cart_button).click()
@@ -86,4 +89,3 @@ class mainPage:
         self.driver.find_element(*mainPage.go_to_checkout).click()
         checkout_page = checkoutPage.CheckoutPage(self.driver)
         return checkout_page
-

@@ -1,8 +1,6 @@
 import time
-
 import pytest
 from selenium.common import NoSuchElementException
-
 from pageObjects.registrationPage import RegistrationPage
 from utilities.BaseClass import BaseClass
 from pageObjects.mainPage import mainPage
@@ -60,7 +58,6 @@ class TestUserRegistration(BaseClass):
         imap_server = Secrets.email_imap_server
         time.sleep(25)
         hyperlinks = self.get_hyperlinks_from_first_email(username, password, imap_server)
-        print(hyperlinks)
         registration_hyperlink = hyperlinks[7]
         self.driver.get(registration_hyperlink)
         login_page = LoginPage(self.driver)
@@ -142,7 +139,6 @@ class TestUserRegistration(BaseClass):
     def test_latin_only_validation(self):
         registration_page = RegistrationPage(self.driver)
         self.checkPage("https://beta.tme.hk/en/register")
-        registration_page.clearInputFields()
         registration_page.inputCompanyName("亂數產")
         registration_page.inputCompanyEmail("亂數產@x.x")
         registration_page.inputCompanyPhone("亂數產")
@@ -167,7 +163,6 @@ class TestUserRegistration(BaseClass):
     def test_correct_format_validation(self):
         registration_page = RegistrationPage(self.driver)
         self.checkPage("https://beta.tme.hk/en/register")
-        registration_page.clearInputFields()
         registration_page.inputCompanyEmail("xxxx.com")
         registration_page.inputCustomerEmail("xxxx.com")
         registration_page.inputCompanyPhone("1" * 10)
