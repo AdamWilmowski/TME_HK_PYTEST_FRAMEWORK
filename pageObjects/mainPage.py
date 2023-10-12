@@ -28,6 +28,8 @@ class mainPage:
     products_attributes = (By.CSS_SELECTOR, "p[class='no-wrap']")
     dropdown_button = (By.XPATH, "//i[@class='dropdown icon']")
     my_orders_button = (By.LINK_TEXT, "My Orders")
+    logout_button = (By.LINK_TEXT, "Logout")
+    company_users_button = (By.LINK_TEXT, "Company Users")
 
     def getToRegistrationPage(self):
         self.driver.find_element(*mainPage.register_button).click()
@@ -44,11 +46,21 @@ class mainPage:
         login_page = loginPage.LoginPage(self.driver)
         return login_page
 
+    def getToCompanyUsers(self):
+        self.driver.find_element(*mainPage.dropdown_button).click()
+        self.driver.find_element(*mainPage.company_users_button).click()
+        account_page = accountPage.AccountPage(self.driver)
+        return account_page
+
     def getToMyOrders(self):
         self.driver.find_element(*mainPage.dropdown_button).click()
         self.driver.find_element(*mainPage.my_orders_button).click()
         account_page = accountPage.AccountPage(self.driver)
         return account_page
+
+    def logout(self):
+        self.driver.find_element(*mainPage.dropdown_button).click()
+        self.driver.find_element(*mainPage.logout_button).click()
 
     def searchForProduct(self, text):
         self.driver.find_element(*mainPage.search).send_keys(text)

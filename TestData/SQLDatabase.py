@@ -1,5 +1,6 @@
 import sqlite3
 
+
 class SQLFunctions:
 
     def getEmailValue(self):

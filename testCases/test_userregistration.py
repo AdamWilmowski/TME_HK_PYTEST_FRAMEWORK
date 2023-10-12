@@ -68,7 +68,7 @@ class TestUserRegistration(BaseClass):
         login_page.inputPassword(Secrets.default_password)
         account_page = login_page.getToAccountPage()
         sql_function.inputCustomerData(email_value, company_name, email, company_phone, company_city, company_street,
-                                       company_zip, customer_job, customer_phone, customer_name,customer_surname,
+                                       company_zip, customer_job, customer_phone, customer_name, customer_surname,
                                        db_version)
         assert account_page.getNameHeader().text == customer_name
         account_page.getAccountDashboardButton().click()
@@ -81,6 +81,84 @@ class TestUserRegistration(BaseClass):
         assert account_page.getDashboardBillingAddress()[1] == company_name
         assert account_page.getDashboardBillingAddress()[2] == company_street
         assert account_page.getDashboardBillingAddress()[4] == f"T: {company_phone}"
+
+    def test_add_company_user(self):
+        main_page = mainPage(self.driver)
+        self.closeCookies()
+        db_version = main_page.getDBVersion()
+        login_page = main_page.getToLoginPage()
+        main_page, user_email = login_page.getToMainPageWithLogging(db_version)
+        account_page = main_page.getToCompanyUsers()
+        try:
+            users = account_page.getCompanyUsers()
+            user_len = len(users)
+        except NoSuchElementException:
+            user_len = 0
+        account_page.getAddNewCompanyUser()
+        random_data = RandomData()
+        sql_function = SQLFunctions()
+        job_title = "SeleniumCreated"
+        name = random_data.get_name()
+        surname = random_data.get_surname()
+        email_value = sql_function.getEmailValue()
+        email = f"chinacustomertme+{email_value}@gmail.com"
+        phone = random_data.get_random_value(12, "number")
+        company = sql_function.getCustomerData("company_name", "email", user_email)
+        company_phone = sql_function.getCustomerData("company_phone", "email", user_email)
+        company_city = sql_function.getCustomerData("company_city", "email", user_email)
+        company_street = sql_function.getCustomerData("company_street", "email", user_email)
+        company_zip = sql_function.getCustomerData("company_zip", "email", user_email)
+        assert self.getCurrentURL() == "https://beta.tme.hk/en/account/company/users/add"
+        account_page.inputCompanyUserJob(job_title)
+        account_page.inputCompanyUserName(name)
+        account_page.inputCompanyUserSurname(surname)
+        account_page.inputCompanyUserEmail(email)
+        account_page.inputCompanyUserPhone(phone)
+        account_page.submitCompanyUser()
+        username = Secrets.email_username
+        password = Secrets.email_password
+        imap_server = Secrets.email_imap_server
+        time.sleep(25)
+        hyperlinks = self.get_hyperlinks_from_first_email(username, password, imap_server)
+        registration_hyperlink = hyperlinks[7]
+        self.driver.get(registration_hyperlink)
+        login_page = LoginPage(self.driver)
+        login_page.inputFirstPassword(Secrets.default_password)
+        login_page.inputConfirmPassword(Secrets.default_password)
+        login_page.getSavePasswordButton().click()
+        login_page.inputUsername(email)
+        login_page.inputPassword(Secrets.default_password)
+        account_page = login_page.getToAccountPage()
+        sql_function.inputCustomerData(email_value, company, email, company_phone, company_city, company_street,
+                                       company_zip, job_title, phone, name, surname, db_version)
+        account_page.acceptAllAgreements()
+        assert account_page.getNameHeader().text == name
+        account_page.getAccountDashboardButton().click()
+        dashboard_values = account_page.getDashboardValues()
+        value_list = [company, user_email, company_phone, name, surname, email, phone]
+        for i in range(len(value_list)):
+            if i != 1:
+                assert dashboard_values[i].text == str(value_list[i])
+        main_page.getToCompanyUsers()
+        users_new = account_page.getCompanyUsers()
+        users_len_new = len(users_new)
+        assert users_len_new == user_len + 1
+        company_users_emails = account_page.getCompanyUsersEmails()
+        assert user_email in company_users_emails
+        self.get_to_main()
+        main_page = mainPage(self.driver)
+        main_page.logout()
+        login_page = main_page.getToLoginPage()
+        login_page.inputUsername(user_email)
+        login_page.inputPassword(Secrets.default_password)
+        login_page.getToAccountPage()
+        self.get_to_main()
+        main_page.getToCompanyUsers()
+        company_user_email = account_page.getCompanyUsersEmails()[-1]
+        assert email == company_user_email
+        company_user_statuses = account_page.getCompanyUsersStatus()
+        assert company_user_statuses[-1] == "Active"
+
 
     @pytest.mark.validations
     @pytest.mark.form
@@ -185,4 +263,3 @@ class TestUserRegistration(BaseClass):
         assert registration_page.getCompanyPhone().get_attribute("value") == "1234567891011"
         assert registration_page.getCustomerPhone().get_attribute("value") == "1234567891011"
         assert registration_page.getCompanyZip().get_attribute("value") == "123456"
-
