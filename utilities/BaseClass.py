@@ -51,6 +51,9 @@ class BaseClass:
         except NoSuchElementException:
             pass
 
+    def stopLoad(self):
+        self.driver.execute_script("window.stop();")
+
     def get_hyperlinks_from_first_email(self, username, password, server, mailbox="INBOX", subject="Welcome"):
         try:
             mail = imaplib.IMAP4_SSL(server)
