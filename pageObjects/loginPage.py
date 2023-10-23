@@ -21,6 +21,12 @@ class LoginPage:
     captcha = (By.CLASS_NAME, 'captcha_image')
     captcha_validation = (By.CSS_SELECTOR, "span[class='color-error validation-error']")
     captcha_input = (By.ID, 'captcha')
+    forgot_password_button = (By.LINK_TEXT, "Forgot password?")
+    forgot_password_email = (By.ID, "sylius_user_request_password_reset_email")
+    reset_password_button = (By.XPATH, "//button[normalize-space()='Reset']")
+    reset_password_new_password = (By.ID, "sylius_user_reset_password_password_first")
+    reset_password_confirm_password = (By.ID, "sylius_user_reset_password_password_second")
+    reset_password_reset_button = (By.XPATH, "button -primary -login m-t-30 m-b-10")
 
     def inputFirstPassword(self, text):
         self.driver.find_element(*LoginPage.set_first_password).send_keys(text)
@@ -67,3 +73,22 @@ class LoginPage:
 
     def getCaptcha(self):
         return self.driver.find_element(*LoginPage.captcha)
+
+    def getForgotPasswordPage(self):
+        self.driver.find_element(*LoginPage.forgot_password_button).click()
+
+    def inputForgotPasswordEmail(self, text):
+        self.driver.find_element(*LoginPage.forgot_password_email).send_keys(text)
+
+    def resetPassword(self):
+        self.driver.find_element(*LoginPage.reset_password_button).click()
+
+    def inputNewPassword(self, text):
+        self.driver.find_element(*LoginPage.reset_password_new_password).send_keys(text)
+
+    def inputConfirmNewPassword(self, text):
+        self.driver.find_element(*LoginPage.reset_password_confirm_password).send_keys(text)
+
+    def resetPasswordResetButton(self):
+        self.driver.find_element(*LoginPage.reset_password_reset_button).click()
+

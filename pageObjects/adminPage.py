@@ -32,6 +32,7 @@ class AdminPage:
     order_summary_total = (By.ID, "total")
     order_summary_response_codes = (By.XPATH, "//tbody/tr/td[7]")
     order_summary_order_status = (By.CSS_SELECTOR, "span[class='ui label']")
+    order_price_input = (By.CSS_SELECTOR, "input[class='update-input']")
 
     def loginToAdmin(self):
         self.driver.find_element(*AdminPage.admin_username).send_keys(Secrets.admin_username)
@@ -100,6 +101,11 @@ class AdminPage:
             if element.text.split()[0] != "USD":
                 elements_text.append(element.text)
         return elements_text
+
+    def inputCustomPrice(self, product, text):
+        input_field = product + (product - 1)
+        self.driver.find_elements(*AdminPage.order_price_input)[input_field].clear()
+        self.driver.find_elements(*AdminPage.order_price_input)[input_field].send_keys(text)
 
     def waitTillSubmitOrderClickable(self):
         WebDriverWait(self.driver, 60).until(EC.element_to_be_clickable(AdminPage.submit_order))

@@ -30,6 +30,7 @@ class mainPage:
     my_orders_button = (By.LINK_TEXT, "My Orders")
     logout_button = (By.LINK_TEXT, "Logout")
     company_users_button = (By.LINK_TEXT, "Company Users")
+    company_dashboard_button = (By.LINK_TEXT, "Account Dashboard")
 
     def getToRegistrationPage(self):
         self.driver.find_element(*mainPage.register_button).click()
