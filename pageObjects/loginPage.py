@@ -26,7 +26,7 @@ class LoginPage:
     reset_password_button = (By.XPATH, "//button[normalize-space()='Reset']")
     reset_password_new_password = (By.ID, "sylius_user_reset_password_password_first")
     reset_password_confirm_password = (By.ID, "sylius_user_reset_password_password_second")
-    reset_password_reset_button = (By.XPATH, "button -primary -login m-t-30 m-b-10")
+    reset_password_reset_button = (By.CSS_SELECTOR, "button[class='button -primary -login m-t-30 m-b-10']")
 
     def inputFirstPassword(self, text):
         self.driver.find_element(*LoginPage.set_first_password).send_keys(text)
@@ -59,7 +59,6 @@ class LoginPage:
 
     def getCaptchaValidation(self):
         return self.driver.find_element(*LoginPage.captcha_validation)
-
 
     def getToMainPageWithLogging(self, version):
         sql_function = SQLFunctions()

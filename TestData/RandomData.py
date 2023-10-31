@@ -31,7 +31,9 @@ class RandomData:
         return street
 
     def get_CompanyName(self):
-        company_name = (randomname.generate('ip/corporate')).capitalize()
+        first_word = (randomname.generate('ip/corporate')).capitalize()
+        second_word = (randomname.generate('ip/corporate')).capitalize()
+        company_name = first_word + " " + second_word
         return company_name
 
 

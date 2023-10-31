@@ -30,6 +30,21 @@ class AccountPage:
     company_user_submit = (By.CSS_SELECTOR, "button[class='button -primary']")
     company_users_list_emails = (By.CSS_SELECTOR, "td[aria-label='Email']")
     company_users_list_status = (By.CSS_SELECTOR, "td[aria-label='Status']")
+    add_new_address_button = (By.LINK_TEXT, "Add New Address")
+    new_address_company_name = (By.ID, "sylius_address_company")
+    new_address_city = (By.ID, "sylius_address_city")
+    new_address_street = (By.ID, "sylius_address_street")
+    new_address_zip = (By.ID, "sylius_address_postcode")
+    new_address_phone = (By.ID, "sylius_address_phoneNumber")
+    new_address_set_default = (By.CSS_SELECTOR, "div[class='ui toggle checkbox']")
+    new_address_save_button = (By.CSS_SELECTOR, "button[class='button -primary -fullWidth']")
+    address_book_shipping_address = (By.ID, "sylius-default-address")
+    change_password_button = (By.LINK_TEXT, "Change Password")
+    current_password = (By.ID, "sylius_user_change_password_currentPassword")
+    new_password_first = (By.ID, "sylius_user_change_password_newPassword_first")
+    new_password_second = (By.ID, "sylius_user_change_password_newPassword_second")
+    save_new_password_button = (By.XPATH, '//form/button')
+
 
     def getNameHeader(self):
         return self.driver.find_element(*AccountPage.name_header)
@@ -112,3 +127,46 @@ class AccountPage:
         for user in users_statuses:
             user_statuses_text.append(user.text)
         return user_statuses_text
+
+    def getAddNewAddress(self):
+        self.driver.find_element(*AccountPage.add_new_address_button).click()
+
+    def inputNewAddressCompanyName(self, text):
+        self.driver.find_element(*AccountPage.new_address_company_name).send_keys(text)
+    def inputNewAddressCity(self, text):
+        self.driver.find_element(*AccountPage.new_address_city).send_keys(text)
+    def inputNewAddressStreet(self, text):
+        self.driver.find_element(*AccountPage.new_address_street).send_keys(text)
+    def inputNewAddressZip(self, text):
+        self.driver.find_element(*AccountPage.new_address_zip).send_keys(text)
+    def inputNewAddressPhone(self, text):
+        self.driver.find_element(*AccountPage.new_address_phone).send_keys(text)
+    def getNewAddressSetAsDefault(self):
+        self.driver.find_element(*AccountPage.new_address_set_default).click()
+    def getNewAddressSave(self):
+        self.driver.find_element(*AccountPage.new_address_save_button).click()
+
+    def getDefaultShippingAddress(self):
+        address = self.driver.find_elements(*AccountPage.address_book_shipping_address)[1].text
+        address_list = address.split()
+        address_list.pop(6)
+        address_list.pop(6)
+        company_name = address_list[0] + " " + address_list[1]
+        street_address = address_list[2] + " " + address_list[3]
+        address_list = [company_name, street_address] + address_list[4:]
+        return address_list
+
+    def getToChangePassword(self):
+        self.driver.find_element(*AccountPage.change_password_button).click()
+
+    def inputCurrentPassword(self, text):
+        self.driver.find_element(*AccountPage.current_password).send_keys(text)
+
+    def inputNewPasswordFirst(self, text):
+        self.driver.find_element(*AccountPage.new_password_first).send_keys(text)
+
+    def inputNewPasswordSecond(self, text):
+        self.driver.find_element(*AccountPage.new_password_second).send_keys(text)
+
+    def getSaveNewPassword(self):
+        self.driver.find_element(*AccountPage.save_new_password_button).click()

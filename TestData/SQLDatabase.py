@@ -23,6 +23,9 @@ class SQLFunctions:
         cursor.execute(insert_query, (_id, company_name, email, company_phone, company_city, company_street,
                                       company_zip, customer_job, customer_phone, customer_name,
                                       customer_surname, version))
+        insert_flag_query = "INSERT INTO customers_flags (id) VALUES (?);"
+        cursor.execute(insert_flag_query, (_id,))
+
         sql.commit()
         sql.close()
 
@@ -38,7 +41,9 @@ class SQLFunctions:
     def getRandomCustomerEmail(self, version):
         sql = sqlite3.connect('TMEHK.db')
         cursor = sql.cursor()
-        cursor.execute(f"SELECT email FROM customers WHERE version='{version}' ORDER BY random()")
+        cursor.execute(f"SELECT customers.email FROM customers LEFT JOIN customers_flags ON"
+                       f" customers.id = customers_flags.id WHERE customers.version='{version}' "
+                       f"AND customers_flags.password = 0 ORDER BY random()")
         email = cursor.fetchone()[0]
         sql.close()
         return email
@@ -50,3 +55,16 @@ class SQLFunctions:
         record = cursor.fetchone()[0]
         sql.close()
         return record
+
+    def changeCustomerFlag(self, flag, index, value):
+        if not isinstance(value, bool):
+            raise TypeError("The argument must be a boolean value")
+        sql = sqlite3.connect('TMEHK.db')
+        cursor = sql.cursor()
+        if value:
+            update_query = f"UPDATE customers_flags SET {flag} = {1} where id = {index}"
+        else:
+            update_query = f"UPDATE customers_flags SET {flag} = {0} where id = {index}"
+        cursor.execute(update_query)
+        sql.commit()
+        sql.close()

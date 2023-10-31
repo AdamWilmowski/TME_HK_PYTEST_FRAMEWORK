@@ -1,5 +1,4 @@
 import time
-
 import pytest
 from TestData.SQLDatabase import SQLFunctions
 from utilities.BaseClass import BaseClass
@@ -44,18 +43,32 @@ class TestLogin(BaseClass):
         imap_server = Secrets.email_imap_server
         time.sleep(25)
         hyperlinks = self.get_hyperlinks_from_first_email(username, password, imap_server, subject="You")
-        self.get_to(hyperlinks[7])
-        login_page.inputNewPassword(Secrets.default_password)
+        self.get_to(hyperlinks[7].replace('">link</a', ""))
+        login_page.inputNewPassword(Secrets.default_password+"1")
         login_page.inputConfirmNewPassword(Secrets.default_password+"1")
         login_page.resetPasswordResetButton()
         login_page.inputUsername(email)
         login_page.inputPassword(Secrets.default_password+"1")
-        login_page.getToAccountPage()
+        account_page = login_page.getToAccountPage()
         try:
             assert self.getCurrentURL() == "https://beta.tme.hk/en/"
         except AssertionError:
             assert self.getCurrentURL() == "https://beta.tme.hk/en/account/agreements"
-        
+        email_id = email.replace("chinacustomertme+", "").replace("@gmail.com", "")
+        sql_function.changeCustomerFlag("password", email_id, True)
+        main_page.getToAddressBook()
+        account_page.getToChangePassword()
+        account_page.inputCurrentPassword(Secrets.default_password+"1")
+        account_page.inputNewPasswordFirst(Secrets.default_password)
+        account_page.inputNewPasswordSecond(Secrets.default_password)
+        account_page.getSaveNewPassword()
+        self.get_to_main()
+        main_page.logout()
+        main_page.getToLoginPage()
+        login_page.inputUsername(email)
+        login_page.inputPassword(Secrets.default_password)
+        login_page.getToAccountPage()
+        sql_function.changeCustomerFlag("password", email_id, False)
 
     def test_login_incorrect(self):
         main_page = mainPage(self.driver)

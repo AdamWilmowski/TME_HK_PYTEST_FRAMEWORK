@@ -31,6 +31,8 @@ class mainPage:
     logout_button = (By.LINK_TEXT, "Logout")
     company_users_button = (By.LINK_TEXT, "Company Users")
     company_dashboard_button = (By.LINK_TEXT, "Account Dashboard")
+    address_book_button = (By.LINK_TEXT, "Address Book")
+
 
     def getToRegistrationPage(self):
         self.driver.find_element(*mainPage.register_button).click()
@@ -102,3 +104,9 @@ class mainPage:
         self.driver.find_element(*mainPage.go_to_checkout).click()
         checkout_page = checkoutPage.CheckoutPage(self.driver)
         return checkout_page
+
+    def getToAddressBook(self):
+        self.driver.find_element(*mainPage.dropdown_button).click()
+        self.driver.find_element(*mainPage.address_book_button).click()
+        account_page = accountPage.AccountPage(self.driver)
+        return account_page
