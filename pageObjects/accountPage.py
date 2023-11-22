@@ -39,6 +39,7 @@ class AccountPage:
     new_address_set_default = (By.CSS_SELECTOR, "div[class='ui toggle checkbox']")
     new_address_save_button = (By.CSS_SELECTOR, "button[class='button -primary -fullWidth']")
     address_book_shipping_address = (By.ID, "sylius-default-address")
+    address_book_not_default_addresses = (By.ID, "sylius-addresses")
     change_password_button = (By.LINK_TEXT, "Change Password")
     current_password = (By.ID, "sylius_user_change_password_currentPassword")
     new_password_first = (By.ID, "sylius_user_change_password_newPassword_first")
@@ -145,6 +146,8 @@ class AccountPage:
         self.driver.find_element(*AccountPage.new_address_set_default).click()
     def getNewAddressSave(self):
         self.driver.find_element(*AccountPage.new_address_save_button).click()
+
+
 
     def getDefaultShippingAddress(self):
         address = self.driver.find_elements(*AccountPage.address_book_shipping_address)[1].text

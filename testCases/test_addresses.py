@@ -40,5 +40,3 @@ class TestAddress(BaseClass):
         main_page.getAddToCartButton().click()
         main_page.waitTillProductinBasket("1")
         checkout_page = main_page.getToCheckout()
-
-

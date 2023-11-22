@@ -33,6 +33,7 @@ class TestUserRegistration(BaseClass):
         registration_page.inputCompanyName(company_name)
         registration_page.inputCompanyEmail(email)
         registration_page.inputCompanyPhone(company_phone)
+        registration_page.setRegiontoChina()
         registration_page.inputCompanyCity(company_city)
         registration_page.inputCompanyStreet(company_street)
         registration_page.inputCompanyZip(company_zip)
@@ -59,6 +60,7 @@ class TestUserRegistration(BaseClass):
         time.sleep(25)
         hyperlinks = self.get_hyperlinks_from_first_email(username, password, imap_server)
         registration_hyperlink = hyperlinks[7]
+        self.openNewWindow()
         self.driver.get(registration_hyperlink)
         login_page = LoginPage(self.driver)
         login_page.inputFirstPassword(Secrets.default_password)
@@ -70,6 +72,7 @@ class TestUserRegistration(BaseClass):
         sql_function.inputCustomerData(email_value, company_name, email, company_phone, company_city, company_street,
                                        company_zip, customer_job, customer_phone, customer_name, customer_surname,
                                        db_version)
+        sql_function.close()
         assert account_page.getNameHeader().text == customer_name
         account_page.getAccountDashboardButton().click()
         dashboard_values = account_page.getDashboardValues()
@@ -118,6 +121,7 @@ class TestUserRegistration(BaseClass):
         username = Secrets.email_username
         password = Secrets.email_password
         imap_server = Secrets.email_imap_server
+        self.openNewWindow()
         time.sleep(25)
         hyperlinks = self.get_hyperlinks_from_first_email(username, password, imap_server)
         registration_hyperlink = hyperlinks[7]

@@ -5,6 +5,7 @@ import logging
 import re
 import pytest
 from selenium.common import NoSuchElementException
+from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 
 
@@ -53,6 +54,9 @@ class BaseClass:
 
     def stopLoad(self):
         self.driver.execute_script("window.stop();")
+
+    def openNewWindow(self):
+        self.driver.switch_to.new_window('window')
 
     def get_hyperlinks_from_first_email(self, username, password, server, mailbox="INBOX", subject="Welcome"):
         try:

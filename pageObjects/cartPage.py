@@ -1,7 +1,7 @@
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support import expected_conditions as EC, wait
 
 
 class CartPage:
@@ -9,6 +9,8 @@ class CartPage:
     def __init__(self, driver):
         self.driver = driver
 
+    cart_region_select = (By.CSS_SELECTOR, "div[class='ui selection dropdown shipping-country-dropdown d-block m-t-10']")
+    cart_region_china =(By.CSS_SELECTOR, 'div[data-value="CN"]')
     cart_weights = (By.XPATH, "//td[3]/div/div/p/span")
     weight_total = (By.CSS_SELECTOR, "div[data-update-field='weightTotal']")
     cart_unit_prices = (By.XPATH, "//td[4]/div/div/p/span")
@@ -18,6 +20,12 @@ class CartPage:
     increase_qty_button = (By.XPATH, "//i[@class='caret right icon']")
     qty_input_field = (By.ID, "sylius_cart_item_quantity")
     cart_grand_total = (By.CSS_SELECTOR, "span[class='text-size-big color-primary']")
+
+    def setCartRegionToChina(self):
+        self.driver.find_element(*CartPage.cart_region_select).click()
+        self.driver.find_element(*CartPage.cart_region_china).click()
+
+
 
     def getCartWeights(self, number):
         weight_list = []

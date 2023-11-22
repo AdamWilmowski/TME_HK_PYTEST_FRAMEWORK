@@ -1,3 +1,6 @@
+import time
+
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from pageObjects.checkoutPage import CheckoutPage
 
@@ -23,6 +26,8 @@ class RegistrationPage:
     input_fields = (By.XPATH, "//input[@type='text']")
     required_radio = (By.XPATH, "//label[@for='app_company_user_agreements_245_approved_0']")
     thank_header = (By.XPATH, "//h2")
+    region_select = (By.XPATH, '//form/div[4]/div')
+    region_china = (By.CSS_SELECTOR, 'div[data-value="CN"]')
     agreements_all_labels = (By.XPATH, "//div/div/div/label")
     thank_values = (By.CSS_SELECTOR, "span[class='item-value']")
 
@@ -47,6 +52,12 @@ class RegistrationPage:
 
     def getCompanyPhone(self):
         return self.driver.find_element(*RegistrationPage.company_phone)
+
+    def setRegiontoChina(self):
+        region_select = self.driver.find_element(*RegistrationPage.region_select)
+        ActionChains(self.driver).scroll_to_element(region_select).perform()
+        self.driver.find_element(*RegistrationPage.region_select).click()
+        self.driver.find_element(*RegistrationPage.region_china).click()
 
     def inputCompanyCity(self, text):
         return self.driver.find_element(*RegistrationPage.company_city).send_keys(text)

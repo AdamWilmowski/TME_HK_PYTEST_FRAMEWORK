@@ -33,6 +33,8 @@ class CheckoutPage:
     company_name = (By.ID, "app_checkout_company_data_customer_companyUser_company_name")
     company_email = (By.ID, "app_checkout_company_data_customer_companyUser_company_email")
     company_phone = (By.ID, "app_checkout_company_data_customer_companyUser_company_phoneNumber")
+    company_region = (By.XPATH, "//form/div[4]/div")
+    region_china = (By.CSS_SELECTOR, 'div[data-value="CN"]')
     company_city = (By.ID, "app_checkout_company_data_customer_companyUser_company_city")
     company_street = (By.ID, "app_checkout_company_data_customer_companyUser_company_street")
     company_zip = (By.ID, "app_checkout_company_data_customer_companyUser_company_postcode")
@@ -41,6 +43,7 @@ class CheckoutPage:
     customer_name = (By.ID, "app_checkout_company_data_customer_firstName")
     customer_surname = (By.ID, "app_checkout_company_data_customer_lastName")
     company_shipping_name = (By.ID, "app_checkout_shipping_shippingAddress_company")
+    company_shipping_region = (By.XPATH, '//*[@id="sylius-shipping-address"]/div[2]/div')
     company_shipping_city = (By.ID, "app_checkout_shipping_shippingAddress_city")
     company_shipping_street = (By.ID, "app_checkout_shipping_shippingAddress_street")
     company_shipping_zip = (By.ID, "app_checkout_shipping_shippingAddress_postcode")
@@ -126,6 +129,13 @@ class CheckoutPage:
     def inputUnRegCompanyPhone(self, text):
         self.driver.find_element(*CheckoutPage.company_phone).send_keys(text)
 
+    def setUnRegCompanyRegiontoChina(self):
+        region_select = self.driver.find_element(*CheckoutPage.company_region)
+        ActionChains(self.driver).scroll_to_element(region_select).perform()
+        self.driver.find_element(*CheckoutPage.company_region).click()
+        self.driver.find_element(*CheckoutPage.region_china).click()
+
+
     def inputUnRegCompanyCity(self, text):
         self.driver.find_element(*CheckoutPage.company_city).send_keys(text)
 
@@ -152,6 +162,13 @@ class CheckoutPage:
 
     def inputShippingName(self, text):
         self.driver.find_element(*CheckoutPage.company_shipping_name).send_keys(text)
+
+    def setShippingRegionToChina(self):
+        region = self.driver.find_element(*CheckoutPage.company_shipping_region)
+        ActionChains(self.driver).scroll_to_element(region).perform()
+        region.click()
+        self.driver.find_element(*CheckoutPage.region_china).click()
+
 
     def inputShippingCity(self, text):
         self.driver.find_element(*CheckoutPage.company_shipping_city).send_keys(text)

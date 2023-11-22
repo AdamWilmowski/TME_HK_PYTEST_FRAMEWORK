@@ -26,7 +26,7 @@ class TestAdminPanel(BaseClass):
         admin_page.inputCustomerEmailOrder(email)
         admin_page.submitSearchOrder()
         admin_page.initialPlaceOrderButton()
-        time.sleep(0.5)
+        time.sleep(1)
         admin_page.inputSku("USL1M-DIO")
         admin_page.inputQTY("100")
         admin_page.waitTillSubmitOrderClickable()
